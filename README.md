@@ -34,7 +34,6 @@
 ```
 my-prompts-collection/
 ├── README.md
-├── CHANGELOG.md          # история изменений всех промтов
 └── design/               # UX/UI и визуальный дизайн
     └── design-perception-audit.md
 ```
