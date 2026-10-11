@@ -51,7 +51,10 @@ Rare (monthly or less) / regular / daily. The more frequent the scenario, the st
 - Do not present heuristics as laws. Where a principle is weakly supported, write "risk", not "error". Fitts's Law and response-time thresholds are well supported; the rest are expert heuristics.
 - Separate a violated principle from a matter of taste; mark taste as "taste".
 - Consider the user: what is fine for an expert (hidden shortcuts, dense tables) can be a blocker for a novice on a government service.
-- If the browser check changed something (signing in, cart, region), say that this state may have affected the result.
+- If the browser check changed something (signing in, cart, region), say that this state may have affected the result. Before the run, sign out where possible and start from a clean state (empty canvas, empty cart); if that is not possible, describe the starting state in the assumptions.
+- Background tab: if the tab you are testing in is hidden (`document.visibilityState = "hidden"`, typical for extension-controlled tabs), autosave, timers and latency may be paused. Score save and response checks in such a tab "n/a" with the note "background tab", not 0.
+- Indirect evidence: you may score an item from indirect evidence (e.g., "the previous session's scene was restored, so cross-session storage works") only if you mark it "indirect". Such an item cannot score 3. If there is no indirect evidence either — "n/a".
+- Sizes: give text and target sizes in CSS px — from developer tools or the styles. If you estimate from a screenshot, write "≈" and state the viewport and page zoom; otherwise estimates from different screens are not comparable.
 
 # Lenses
 
@@ -127,6 +130,8 @@ Evidence: high for contrast and text size.
 
 **Blocker:** if any ⛔ item scores 0, the total is capped at 6.0.
 
+**Untested blocker:** if a ⛔ item that the scenario was chosen for is "n/a" (e.g., 4.2 in a scenario about protecting work), the total is marked "preliminary" regardless of coverage, and the answer says how to check it.
+
 **Coverage** = Σ(lens weight × share of assessed items in the lens), as a percentage.
 - ≥70% — the total is reported as is.
 - 40–69% — the total is marked "preliminary"; the answer lists what is needed for a full check.
@@ -143,15 +148,20 @@ Run-to-run spread is about ±0.5. Do not interpret a difference below 0.5 as sig
 
 # Benchmarks
 
-Use them for calibration. Compare the evaluated scenario with the benchmark of the same product type. If there is no benchmark of the required type (currently B, C, E, F), compare with the closest one and say so explicitly.
+Use them for calibration. Compare the evaluated scenario with the benchmark of the same product type. If there is no benchmark of the required type (currently B and E; F has only a preliminary one), compare with the closest one and say so explicitly.
 
-Measurement: run of this prompt version, October 2026, live product [L], desktop, viewport ≈1570×780, mouse + keyboard. Latency by eye.
+Measurement: October 2026, live product [L], desktop, mouse + keyboard, latency by eye.
+- Apple, Yahoo, Amazon — one v1 run, viewport ≈1570×780.
+- GOV.UK, Google Flights, Excalidraw — mean of two independent v1 runs (Russian and English prompt versions, separate chats), viewports ≈1570×705 and ≈2560×1279. Fractional item scores (2.5) are the mean of the two runs; the runs' totals differ by no more than 0.4.
 
 | Type | Scenario | Start → goal | Total | Coverage | Why this score |
 |---|---|---|---|---|---|
 | A | Apple — buying iPhone 18 Pro (US) | apple.com → /iphone-18-pro/ → /shop/buy-iphone/iphone-18-pro | 7.8 | 100% | The configurator is exemplary in reversibility: changing the model keeps color and storage, the configuration survives reload and Back/Forward, there is "Save for later", paid options (AppleCare) are not added silently, the price in the header updates instantly. Minuses: prices in variant cards ≈9–10 px gray, color swatches ≈18 px with no labels until selected, light swatches nearly invisible on white, the sticky header still says "iPhone 18 Pro" after choosing Pro Max, "Buy from" after full configuration, the disabled "Continue" does not say what is missing, on the product page "Buy" is a small pill in the hero corner and the global navigation disappears on scroll. |
 | D | Yahoo Finance — BTC-USD price history | finance.yahoo.com → /quote/BTC-USD/ (+ Chart tab) | 7.4 | 95% | Two-action path: search autocomplete with highlighted match and preselected first result, plus 4 visible entry points (ticker strip, trending, recently viewed). Period buttons show the change for each period — decision information in place. Minuses: four entry points to a chart (Summary widget, Chart tab, Advanced Chart, AlphaSpace) with different period sets and styles; the selected period resets to 24H on reload on both pages; the Chart tab loads ≈5–6 s with a spinner, icon-only toolbar, jargon "vol undr", "+17.84K%", "Market Open" for a 24/7 asset, red price tag on an up day; the typo "bitcion" returns nothing with no suggestion. |
 | A | Amazon — Sony WH-1000XM6 product page (US, shipping to Spain, guest) | amazon.com → search "headphones" → Sony filter → /dp/… | 7.3 | 100% | Short path (4 actions ≈10 s): autocomplete, brand filter with "Clear", Back keeps filter and position, visited links marked. Shipping and import charges visible on the product page before the cart. Minuses: "Color" tiles mix color and condition — choosing Sand Pink silently opens a used offer from another seller with delivery in 2–4 weeks, while "Used" is set at ≈10 px; one model — several listings with different ASINs; a competitor banner above the product and a competitor in results for the exact model; every choice is a full reload ≈2–3 s; "Headphones - 237204" in the tab title, horizontal scroll on the product page. |
+| C | GOV.UK — Check if you need a UK visa | gov.uk/check-uk-visa → nationality, purpose (Tourism) → result → change purpose to Study → reload | 8.4 | 95–100% | An exemplary questionnaire: state in the URL survives Back and reload, "Change" next to every answer keeps the previous choice, error summary on an empty answer, ≈19 px text with high contrast, response ≈0.2–1 s. Minuses: Afghanistan is preselected in the nationality list — Continue without a choice silently gives someone else's result; the verdict is an H2 under an abstract H1, without duration or cost; no "Back" link and no "question N of M" indicator; the cookie banner shifts content after closing and moves the target from under the cursor; "Start again" looks like "Change" and has no confirmation. |
+| A | Google Flights — Vilnius → Barcelona, round trip | google.com/travel/flights → route, dates, 2 adults → stops filter → outbound flight → return flight screen → Back, change date, reload | 7.9 | 100% | Prices under dates in the calendar, a "no nonstop flights" empty state with alternative dates and a "with stops" button, a filter chip with ✕, all state in the URL survives Back and reload. Minuses: after changing the date the old results with old prices stay ≈2 s with no indicator; the return flight screen does not show the chosen outbound flight; Enter in "From" does not move focus; an intrusive price tooltip without the number of passengers; calendar prices ≈7–10 px, date arrows ≈16 px. Both runs were in a signed-in account with region Russia (Minsk by default). |
+| F | Excalidraw — diagram and export (preliminary) | excalidraw.com → 2 labelled rectangles + arrow → Undo/Redo → reload → export dialog | 8.2* | 91–93% | Fast canvas, label on Enter, arrow auto-binding, live export preview. Minuses: no save status — a novice does not know the scene lives only in this browser; the first Undo reverts the selection, not the change; "Reset the canvas" sits next to "Help" with no separator; the UI re-renders after load and swallows the first action; the export dialog has no close button. *4.2 not checked: in both runs the tab was in the background and autosave was paused. |
 
 ## Benchmark scores by lens (0–3)
 Check individual lenses, not just the total: a strong scenario can lose in one of them.
@@ -161,12 +171,19 @@ Check individual lenses, not just the total: a strong scenario can lose in one o
 | Apple — buying iPhone 18 Pro | A | 2.50 (2/2/3/3) | 2.50 (2/2/3/3) | 2.00 (2/1/3/2) | 2.75 (3/3/2/3) | 2.50 (3/3/2/2) | 1.75 (1/2/2/2) | 7.8 |
 | Yahoo Finance — BTC-USD | D | 2.25 (3/1/3/2) | 2.75 (3/3/3/2) | 2.50 (3/2/2/3) | 2.00 (2/2/2/n/a) | 2.00 (1/3/2/2) | 1.75 (2/2/1/2) | 7.4 |
 | Amazon — Sony WH-1000XM6 | A | 2.25 (3/1/3/2) | 2.25 (2/3/3/1) | 2.25 (3/2/1/3) | 2.25 (3/3/2/1) | 2.25 (3/2/2/2) | 1.75 (2/2/1/2) | 7.3 |
+| GOV.UK — UK visa | C | 2.50 (3/2.5/2/2.5) | 2.50 (3/2/2.5/2.5) | 2.12 (2.5/3/1/2) | 2.88 (3/3/3/2) | 2.38 (3/2.5/1.5/2.5) | 2.75 (3/3/2/3) | 8.4 |
+| Google Flights — VNO→BCN | A | 2.62 (2.5/2.5/2.5/3) | 2.38 (3/1.5/3/2) | 2.25 (2/2/2/3) | 2.50 (3/3/2/2) | 2.38 (3/3/1/2.5) | 2.00 (1.5/2.5/1.5/2.5) | 7.9 |
+| Excalidraw — diagram and export | F | 2.75 (2/3/3/3) | 2.42 (2/3/3/2) | 2.62 (3/2/2.5/3) | 2.33 (2/n/a/3/2) | 2.00 (2/3/1.5/1.5) | 2.38 (1.5/3/2/3) | 8.2* |
 
 ## How to read the benchmarks
-- All scenarios are "working", not references. There is no reference (9+) for any type yet; if the evaluated scenario comes out above 8.5, re-check every 3 — each "strength" must be stronger than in the benchmark.
+- There is no reference (9+) for any type yet. Mature products score 7.3–8.4; if the evaluated scenario comes out above 8.5, re-check every 3 — each "strength" must be stronger than in the benchmark.
+- Spread between independent runs: total ±0.4; individual items agree in about 70% of cases and differ by 1. Do not draw conclusions from a one-item difference.
 - Apple is stronger in L4–L5 (reversibility and state memory) — use it as the example of "3" for 4.1, 4.2, 5.1.
 - Yahoo is stronger in L2–L3 (entry points and path) — the example of "3" for 2.1, 3.1, 3.4.
 - Amazon is the example of "1" for 4.4 and 3.3: changing a variant silently changes purchase terms (condition, seller, delivery time). Compare with Apple, where changing a variant never changes the terms — a 0.5 difference in L4.
+- GOV.UK is the example of "3" for 4.1, 4.2 and 2.3 (state in the URL, "Change" next to every answer) and of "1" for 3.3 (a dangerous default in a required field).
+- Google Flights is the example of "3" for 3.4 (calendar prices, empty state with alternatives) and of "1" for 5.3 (stale results with no indicator while updating).
+- Excalidraw is preliminary: do not use it as an example for 4.2 and 5.1.
 - All of them lose in L6: small secondary text next to key figures is a typical loss even for strong products.
 
 # Output format
