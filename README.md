@@ -13,6 +13,7 @@
 | Промт | Для чего | Версия |
 |---|---|---|
 | [Оценка дизайна по исследованиям восприятия](design/design-perception-audit.md) | Экспертная оценка первого экрана сайта или макета по 6 линзам на основе исследований визуального восприятия: балл 0–10, топ-5 проблем, гипотезы для A/B-тестов, бенчмарки (Google, Apple, NYT, Yahoo Finance, Samsung, Podluzny) | v2 |
+| [Аудит взаимодействия по First Principles of Interaction Design](design/interaction-design-audit.md) | Оценка пользовательского сценария (макет, прототип или живой продукт) по принципам Брюса Тогнацци: 6 линз, покрытие проверки по типу артефакта, балл 0–10, топ-5 проблем, бенчмарки (Apple — покупка iPhone, Yahoo Finance — динамика BTC-USD) | v1 |
 
 <!-- Новые промты добавлять строкой в таблицу выше -->
 
@@ -35,7 +36,8 @@
 my-prompts-collection/
 ├── README.md
 └── design/               # UX/UI и визуальный дизайн
-    └── design-perception-audit.md
+    ├── design-perception-audit.md
+    └── interaction-design-audit.md
 ```
 
 Промты сгруппированы по папкам-темам. Новая тема — новая папка.
